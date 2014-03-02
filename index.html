@@ -82,9 +82,10 @@
 <div id="container">
     <div id="left">
        <button id="addvoice" type="button" class="btn btn-primary" style="position:relative; left:10px">Add voice</button>
-          <div id="left" style="position:relative; top:30px; left:130px; "><b>A</b></div>
-          <div id="left" style="position:relative; top:80px; left:130px; "><b>A</b></div>
-       
+    
+
+
+
     </div>
     <div id="right">
          <canvas id="grid"></canvas>
@@ -108,26 +109,40 @@
     <script src="dist/js/grid.min.js"></script>
 
     <script>
-
+//Draw grid
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 var canvas = document.getElementById("grid");
-canvas.width = $(window).width() - ($(window).width() % 50) + 1 - 50;
-canvas.height = $(window).height() - ($(window).height() % 50) - (50*5) + 1;
-canvas.style.position = "relative";
-canvas.style.top = "20px";
-canvas.style.left = "100px";
-canvas.style.float= "right";
-
-
-var context = canvas.getContext("2d");
-
 var opts = {
   distance : 50,
   lineWidth : 1,
   gridColor  : "#000000",
   caption : false
 };
+canvas.width = $(window).width() - ($(window).width() % opts.distance) + 1 -opts.distance;
+canvas.height = $(window).height() - ($(window).height() % opts.distance) - (opts.distance*5) + 1;
+canvas.style.position = "relative";
+canvas.style.top = " 0px";
+canvas.style.left = "100px";
+canvas.style.float= "right";
+
+
+var context = canvas.getContext("2d");
+
+
 new Grid(opts).draw(context);
 
+//draw note labels
+var notes = ['A','B','C','D','E','F','G'];
+for(var i=0; i<((canvas.height-1)/opts.distance);i++){
+  $('#left').append('<div style=\"position:absolute; top:'+(275+(50*i))+'px; left:130px; \"><b>'+notes[i%7]+'</b></div>'); 
+}
+
+
+
+//Handle Adding a new voice
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 var mouseX;
 var mouseY;
 $("#addvoice").click(function(e){
@@ -142,12 +157,14 @@ $("#addvoice").click(function(e){
   drawNode(mouseX, mouseY);
 });
 
-
+//Function declarations
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 function drawNode(mouseX, mouseY){
   var c = document.getElementById("grid");
   var ctx = c.getContext("2d");
   ctx.beginPath();
-  ctx.arc(95,50,8,0,2*Math.PI);
+  ctx.arc(95,50,5,0,2*Math.PI);
   ctx.stroke();
 }
 
