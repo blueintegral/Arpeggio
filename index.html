@@ -135,7 +135,7 @@ new Grid(opts).draw(context);
 //draw note labels
 var notes = ['A','B','C','D','E','F','G'];
 for(var i=0; i<((canvas.height-1)/opts.distance);i++){
-  $('#left').append('<div style=\"position:absolute; top:'+(275+(50*i))+'px; left:130px; \"><b>'+notes[i%7]+'</b></div>'); 
+  $('#left').append('<div style=\"position:absolute; top:'+(275+(opts.distance*i))+'px; left:130px; \"><b>'+notes[i%7]+'</b></div>'); 
 }
 
 
@@ -145,17 +145,56 @@ for(var i=0; i<((canvas.height-1)/opts.distance);i++){
 ////////////////////////////////////////////////////////////////////
 var mouseX;
 var mouseY;
+// $("right").append(drawNode(mouseX, mouseY));
+//  $(document).mousemove(function(e) {
+//     $('#note').offset({
+//         left: e.pageX,
+//         top: e.pageY + 20
+//     });
+// });
+
 $("#addvoice").click(function(e){
-  drawNode(100, 100);
-  $(document.mousemove(function(e){
-     drawNode(e.pageX, e.pageY);
-     mouseX = e.pageX;
-     mouseY = e.pageY;
-   }));
+   console.log("here");
+   drawNode(100,100);
+   var canvas = document.getElementById('grid');
+      var context = canvas.getContext('2d');
+
+      canvas.addEventListener('mousemove', function(evt) {
+        var mousePos = getMousePos(canvas, evt);
+        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+        console.log(message);
+        var nodehandle = document.getElementById('note');
+        if(mousePos.x && mousePos.y) {        
+    nodehandle.x = mousePos.x;
+    nodehandle.y = mousePos.y;
+    flag = 1;
+}
+        //drawNode(mousePos.x, mousePos.y);
+      
+      }, false);
+  //  mouseX = e.clientX;
+  //  mouseY = e.clientY;
+  // drawNode(mouseX, mouseY);
+  
+
+      // var pageCoords = "( " + e.pageX + ", " + e.pageY + " )";
+      // var clientCoords = "( " + e.clientX + ", " + e.clientY + " )";
+      // console.log(pageCoords);
+      // console.log(clientCoords);
+     // $(".lead").text("( e.pageX, e.pageY ) - " + pageCoords);
+      //$(".lead").text("( e.clientX, e.clientY ) - " + clientCoords);
+  
 
 
-  drawNode(mouseX, mouseY);
-});
+
+    // $('#note').offset({left: e.pageX, top: e.pageY});
+     //drawNode(e.pageX, e.pageY);
+     
+   });
+
+
+  //drawNode(mouseX, mouseY);
+//});
 
 //Function declarations
 ////////////////////////////////////////////////////////////////////
@@ -168,6 +207,13 @@ function drawNode(mouseX, mouseY){
   ctx.stroke();
 }
 
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
 
 </script>
   </body>
