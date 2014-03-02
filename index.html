@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Arpeggio</title>
+<style>
+    #left
+    {
+      width: 200px;
+      float: left;
+    }
+
+    #right
+    {
+      margin-left: 100px; /* Change this to whatever the width of your left column is*/
+    }
+
+    .clear
+    {
+      clear: both;
+    }
+  </style>
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="starter-template.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Arpeggio</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Arpeggio</h1>
+        <p class="lead">An intuitive way to capture the music you hear in your head on paper.</p>
+      </div>
+
+    </div><!-- /.container -->
+
+    <!--Begin app -->
+<div id="container">
+    <div id="left">
+       <button id="addvoice" type="button" class="btn btn-primary" style="position:relative; left:10px">Add voice</button>
+          <div id="left" style="position:relative; top:30px; left:130px; "><b>A</b></div>
+          <div id="left" style="position:relative; top:80px; left:130px; "><b>A</b></div>
+       
+    </div>
+    <div id="right">
+         <canvas id="grid"></canvas>
+    </div>
+    <div class="clear"></div>
+  </div>
+
+  
+
+
+
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <script src="dist/js/grid.min.js"></script>
+
+    <script>
+
+var canvas = document.getElementById("grid");
+canvas.width = $(window).width() - ($(window).width() % 50) + 1 - 50;
+canvas.height = $(window).height() - ($(window).height() % 50) - (50*5) + 1;
+canvas.style.position = "relative";
+canvas.style.top = "20px";
+canvas.style.left = "100px";
+canvas.style.float= "right";
+
+
+var context = canvas.getContext("2d");
+
+var opts = {
+  distance : 50,
+  lineWidth : 1,
+  gridColor  : "#000000",
+  caption : false
+};
+new Grid(opts).draw(context);
+
+var mouseX;
+var mouseY;
+$("#addvoice").click(function(e){
+  drawNode(100, 100);
+  $(document.mousemove(function(e){
+     drawNode(e.pageX, e.pageY);
+     mouseX = e.pageX;
+     mouseY = e.pageY;
+   }));
+
+
+  drawNode(mouseX, mouseY);
+});
+
+
+function drawNode(mouseX, mouseY){
+  var c = document.getElementById("grid");
+  var ctx = c.getContext("2d");
+  ctx.beginPath();
+  ctx.arc(95,50,8,0,2*Math.PI);
+  ctx.stroke();
+}
+
+
+</script>
+  </body>
+</html>
