@@ -147,6 +147,7 @@ for(var i=0; i<((canvas.height-1)/opts.distance);i++){
 
 var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
 $("#addvoice").click(function(e){
+  var flag = 0;
    console.log("here");
    var canvas = document.getElementById('grid');
       var context = canvas.getContext('2d');
@@ -156,19 +157,24 @@ $("#addvoice").click(function(e){
         //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
         //console.log(message);
         if(mousePos.x && mousePos.y) {
-        //blankNode(lastpos[0], lastpos[1]);       
-        redrawCanvas();
-        new Grid(opts).draw(context); //need to find a better way to keep the grid but remove everything else.
-        drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
-        $("#grid").click(function(){ //something's wrong here
-            console.log("clicked");
-            drawNode(mousePos.x, mousePos.y);
-        });
-
-    flag = 1;
-}
-
+          //blankNode(lastpos[0], lastpos[1]);       
+          redrawCanvas();
+          new Grid(opts).draw(context); //need to find a better way to keep the grid but remove everything else.
+          drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
+          $("#grid").click(function(){ //something's wrong here
+              console.log("clicked");
+              drawNode(mousePos.x, mousePos.y);
+              flag = 1;
+              return 1;
+          });
+        }
+          if(flag){
+             return 1;
+          }
        }, false);
+      if(flag){
+        return 1;
+      }
   });
 
 //Function declarations
