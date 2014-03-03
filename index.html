@@ -143,8 +143,7 @@ for(var i=0; i<((canvas.height-1)/opts.distance);i++){
 //Handle Adding a new voice
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
-var mouseX;
-var mouseY;
+
 // $("right").append(drawNode(mouseX, mouseY));
 //  $(document).mousemove(function(e) {
 //     $('#note').offset({
@@ -161,12 +160,17 @@ $("#addvoice").click(function(e){
 
       canvas.addEventListener('mousemove', function(evt) {
         var mousePos = getMousePos(canvas, evt);
-        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        console.log(message);
-        var nodehandle = document.getElementById('note');
-        if(mousePos.x && mousePos.y) {        
-    nodehandle.x = mousePos.x;
-    nodehandle.y = mousePos.y;
+       // var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+       // console.log(message);
+        //var nodehandle = document.getElementById('note');
+        var lastpos = [0,0];
+        if(mousePos.x && mousePos.y) {
+        //blankNode(lastpos[0], lastpos[1]);       
+        redrawCanvas();
+        new Grid(opts).draw(context); //This is super slow, need to find a better way to keep the grid but remove everything else.
+        drawNode(mousePos.x, mousePos.y);
+        lastpos[0] = mousePos.x;
+        lastpos[1] = mousePos.y;
     flag = 1;
 }
         //drawNode(mousePos.x, mousePos.y);
@@ -203,7 +207,15 @@ function drawNode(mouseX, mouseY){
   var c = document.getElementById("grid");
   var ctx = c.getContext("2d");
   ctx.beginPath();
-  ctx.arc(95,50,5,0,2*Math.PI);
+  ctx.arc(mouseX,mouseY,5,0,2*Math.PI);
+  ctx.stroke();
+}
+
+function blankNode(mouseX, mouseY){
+  var c = document.getElementById("grid");
+  var ctx = c.getContext("2d");
+  ctx.beginPath();
+  ctx.arc(mouseX,mouseY,5,0,2*Math.PI);
   ctx.stroke();
 }
 
@@ -214,6 +226,20 @@ function getMousePos(canvas, evt) {
           y: evt.clientY - rect.top
         };
       }
+
+function redrawCanvas(){
+  var c = document.getElementById("grid");
+  var ctx = c.getContext("2d");
+    // Store the current transformation matrix
+  ctx.save();
+
+  // Use the identity matrix while clearing the canvas
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Restore the transform
+  ctx.restore();
+}
 
 </script>
   </body>
