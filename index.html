@@ -140,18 +140,12 @@ for(var i=0; i<((canvas.height-1)/opts.distance);i++){
 
 
 
+
 //Handle Adding a new voice
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 
-// $("right").append(drawNode(mouseX, mouseY));
-//  $(document).mousemove(function(e) {
-//     $('#note').offset({
-//         left: e.pageX,
-//         top: e.pageY + 20
-//     });
-// });
-
+var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
 $("#addvoice").click(function(e){
    console.log("here");
    drawNode(100,100);
@@ -162,43 +156,21 @@ $("#addvoice").click(function(e){
         var mousePos = getMousePos(canvas, evt);
        // var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
        // console.log(message);
-        //var nodehandle = document.getElementById('note');
-        var lastpos = [0,0];
         if(mousePos.x && mousePos.y) {
         //blankNode(lastpos[0], lastpos[1]);       
         redrawCanvas();
-        new Grid(opts).draw(context); //This is super slow, need to find a better way to keep the grid but remove everything else.
+        new Grid(opts).draw(context); //need to find a better way to keep the grid but remove everything else.
         drawNode(mousePos.x, mousePos.y);
-        lastpos[0] = mousePos.x;
-        lastpos[1] = mousePos.y;
+        $("#grid").click(function(){ //something's wrong here
+            console.log("clicked");
+            drawNode(mousePos.x, mousePos.y);
+        });
+
     flag = 1;
 }
-        //drawNode(mousePos.x, mousePos.y);
-      
-      }, false);
-  //  mouseX = e.clientX;
-  //  mouseY = e.clientY;
-  // drawNode(mouseX, mouseY);
-  
 
-      // var pageCoords = "( " + e.pageX + ", " + e.pageY + " )";
-      // var clientCoords = "( " + e.clientX + ", " + e.clientY + " )";
-      // console.log(pageCoords);
-      // console.log(clientCoords);
-     // $(".lead").text("( e.pageX, e.pageY ) - " + pageCoords);
-      //$(".lead").text("( e.clientX, e.clientY ) - " + clientCoords);
-  
-
-
-
-    // $('#note').offset({left: e.pageX, top: e.pageY});
-     //drawNode(e.pageX, e.pageY);
-     
-   });
-
-
-  //drawNode(mouseX, mouseY);
-//});
+       }, false);
+  });
 
 //Function declarations
 ////////////////////////////////////////////////////////////////////
