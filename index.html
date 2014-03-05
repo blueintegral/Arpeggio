@@ -165,25 +165,23 @@ canvas.addEventListener('mousemove', function(evt) {
 
 var flag;
 var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
-$("#addvoice").click(function(e){
+$("#addvoice").click(function(){
   flag = 1;
-   console.log("here");
-   var canvas = document.getElementById('grid');
-   var context = canvas.getContext('2d');
-   if(mousePos.x && mousePos.y) {
-      //blankNode(lastpos[0], lastpos[1]);       
-      redrawCanvas();
-      new Grid(opts).draw(context); //need to find a better way to keep the grid but remove everything else.
-      //just redrew grid, now redraw nodes
-      for(i=0;i<drawQ.length;i++){
-        var n = drawQ[i];
-        drawNode(n.x, n.y);
-      }
-      drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
+  var canvas = document.getElementById('grid');
+  var context = canvas.getContext('2d');
+  if(mousePos.x && mousePos.y) {     
+    redrawCanvas();
+    new Grid(opts).draw(context); //Redraw grid
+    //now redraw nodes
+    for(i=0;i<drawQ.length;i++){
+      var n = drawQ[i];
+      drawNode(n.x, n.y);
     }
-   });
+    drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
+  }
+});
 
-$("#grid").click(function(){ //something's wrong here
+$("#grid").click(function(){
   if(flag){
     drawNode(mousePos.x, mousePos.y);
     drawQ.push({
