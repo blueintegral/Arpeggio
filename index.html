@@ -178,16 +178,24 @@ $(document).ready(function(){
       }
   }
   if(AddingNotes){
+    redrawCanvas();
+      new Grid(opts).draw(context); //Redraw grid
+      //now redraw nodes
+      for(i=0;i<drawQ.length;i++){
+        var n = drawQ[i];
+        drawNode(n.x, n.y);
+      }
+
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
     //draw two lines, one in the X and one in the Y 
     context.beginPath(); //begin first line, the X line
     var n = drawQ[drawQ.length-1];
     context.moveTo(n.x, n.y); //first point is at last node on the stack
-    context.lineTo(n.x, mousePos.y); //second point is the y component of current mouse position
+    context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
     context.stroke();
     context.beginPath(); //next line is the Y line
-    context.moveTo(n.x, mousePos.y); //first point is X component of current mouse position
-    context.lineTo(mousePos.x, mousePos.y); //second point is current mouse position
+    context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
+    context.lineTo(mousePos.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
     context.stroke();
     }
   //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
