@@ -158,6 +158,8 @@ var selectedCircle = -1;
 
 
 var mousePos;
+
+//handle mouse move events
 $(document).ready(function(){
   var canvas = document.getElementById('grid');
   var context = canvas.getContext('2d');
@@ -173,18 +175,31 @@ $(document).ready(function(){
         var n = drawQ[i];
         drawNode(n.x, n.y);
       }
+      //redraw notes
+      if(noteQ.length){
+        for(i=0;i<noteQ.length;i++){
+          var n = noteQ[i];
+          context.moveTo(n.x1, n.y1); //first point is at last node on the stack
+          context.lineTo(n.x2, n.y2); //second point is the y component of current mouse position
+          context.stroke();
+          context.beginPath(); //next line is the Y line
+          context.moveTo(n.x3, n.y3); //first point is X component of current mouse position
+          context.lineTo(n.x4, n.y4); //second point is current mouse position
+          context.stroke();
+        }
+      }
       drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
       //console.log("drew node");
       }
   }
   if(AddingNotes){
     redrawCanvas();
-      new Grid(opts).draw(context); //Redraw grid
-      //now redraw nodes
-      for(i=0;i<drawQ.length;i++){
-        var n = drawQ[i];
-        drawNode(n.x, n.y);
-      }
+    new Grid(opts).draw(context); //Redraw grid
+    //now redraw nodes
+    for(i=0;i<drawQ.length;i++){
+      var n = drawQ[i];
+      drawNode(n.x, n.y);
+    }
 
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
     //draw two lines, one in the X and one in the Y 
@@ -206,6 +221,7 @@ $(document).ready(function(){
 var AddingNotes;
 var AddVoiceClicked;
 var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
+var noteQ = []; //keep track of each line drawn
 $("#addvoice").click(function(){
   AddVoiceClicked = 1;
 });
@@ -221,9 +237,30 @@ $("#grid").click(function(){
     });
     AddVoiceClicked = 0;
     AddingNotes = 1;
-  }
-  if(AddingNotes){
+  } else if(AddingNotes){
     //draw the current line, snapped to grid
+    context.beginPath(); //begin first line, the X line
+    var n = drawQ[drawQ.length-1];
+    context.moveTo(n.x, n.y); //first point is at last node on the stack
+    context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
+    context.stroke();
+    context.beginPath(); //next line is the Y line
+    context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
+    context.lineTo(mousePos.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
+    context.stroke();
+    noteQ.push({
+      x1: n.x,
+      y1: n.y,
+      x2: n.x,
+      y2: (Math.floor(mousePos.y/opts.distance))*opts.distance,
+      x3: n.x,
+      y3: (Math.floor(mousePos.y/opts.distance))*opts.distance,
+      x4: mousePos.x,
+      y4: (Math.floor(mousePos.y/opts.distance))*opts.distance
+    });
+    //draw node at end of last note
+
+
   }
 });
  
