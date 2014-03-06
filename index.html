@@ -176,12 +176,26 @@ $(document).ready(function(){
       drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
       //console.log("drew node");
       }
+  }
+  if(AddingNotes){
+    //Want note lines to snap to grid and be perpendicular to each other, so we need to
+    //draw two lines, one in the X and one in the Y 
+    context.beginPath(); //begin first line, the X line
+    var n = drawQ[drawQ.length-1];
+    context.moveTo(n.x, n.y); //first point is at last node on the stack
+    context.lineTo(n.x, mousePos.y); //second point is the y component of current mouse position
+    context.stroke();
+    context.beginPath(); //next line is the Y line
+    context.moveTo(n.x, mousePos.y); //first point is X component of current mouse position
+    context.lineTo(mousePos.x, mousePos.y); //second point is current mouse position
+    context.stroke();
     }
   //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   //console.log(message);
   }, false); //end of event listener
 });
 
+var AddingNotes;
 var AddVoiceClicked;
 var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
 $("#addvoice").click(function(){
@@ -189,6 +203,8 @@ $("#addvoice").click(function(){
 });
 
 $("#grid").click(function(){
+  var canvas = document.getElementById('grid');
+  var context = canvas.getContext('2d');
   if(AddVoiceClicked){
     drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
     drawQ.push({
@@ -196,6 +212,10 @@ $("#grid").click(function(){
       y: (Math.floor(mousePos.y/opts.distance))*opts.distance
     });
     AddVoiceClicked = 0;
+    AddingNotes = 1;
+  }
+  if(AddingNotes){
+    //draw the current line, snapped to grid
   }
 });
  
