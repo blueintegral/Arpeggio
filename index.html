@@ -156,19 +156,16 @@ context.lineWidth = 3;
 var circles = [];
 var selectedCircle = -1;
 
+
 var mousePos;
+$(document).ready(function(){
+   var canvas = document.getElementById('grid');
+  var context = canvas.getContext('2d');
 canvas.addEventListener('mousemove', function(evt) {
   mousePos = getMousePos(canvas, evt);
-  //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-  //console.log(message);
-  }, false); //end of event listener
+  console.log("updated mouse position");
+  if(flag){
 
-var flag;
-var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
-$("#addvoice").click(function(){
-  flag = 1;
-  var canvas = document.getElementById('grid');
-  var context = canvas.getContext('2d');
   if(mousePos.x && mousePos.y) {     
     redrawCanvas();
     new Grid(opts).draw(context); //Redraw grid
@@ -178,7 +175,19 @@ $("#addvoice").click(function(){
       drawNode(n.x, n.y);
     }
     drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
+    console.log("drew node");
   }
+  }
+  //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+  //console.log(message);
+  }, false); //end of event listener
+});
+
+var flag;
+var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
+$("#addvoice").click(function(){
+  flag = 1;
+
 });
 
 $("#grid").click(function(){
