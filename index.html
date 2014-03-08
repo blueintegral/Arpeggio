@@ -155,8 +155,6 @@ context.lineWidth = 3;
 // save info about each circle in an object
 var circles = [];
 var selectedCircle = -1;
-
-
 var mousePos;
 
 //handle mouse move events
@@ -165,53 +163,42 @@ $(document).ready(function(){
   var context = canvas.getContext('2d');
   canvas.addEventListener('mousemove', function(evt) {
   mousePos = getMousePos(canvas, evt);
-  //console.log("updated mouse position");
   if(AddVoiceClicked){
     if(mousePos.x && mousePos.y) {     
       redrawCanvas();
       new Grid(opts).draw(context); //Redraw grid
-      //now redraw nodes
-      for(i=0;i<drawQ.length;i++){
-        var n = drawQ[i];
+      //now redraw already places nodes
+      for(i=0;i<nodeQ.length;i++){
+        var n = nodeQ[i];
         drawNode(n.x, n.y);
       }
-      //redraw notes
-      if(noteQ.length){
-        for(i=0;i<noteQ.length;i++){
-          var n = noteQ[i];
-          context.moveTo(n.x1, n.y1); //first point is at last node on the stack
-          context.lineTo(n.x2, n.y2); //second point is the y component of current mouse position
-          context.stroke();
-          context.beginPath(); //next line is the Y line
-          context.moveTo(n.x3, n.y3); //first point is X component of current mouse position
-          context.lineTo(n.x4, n.y4); //second point is current mouse position
-          context.stroke();
-        }
-      }
-      drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
-      //console.log("drew node");
-      }
+      //redraw already placed notes
+      drawLineQ();
+      drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); //draw node at current mouse
+    }
   }
   if(AddingNotes){
     redrawCanvas();
     new Grid(opts).draw(context); //Redraw grid
     //now redraw nodes
-    for(i=0;i<drawQ.length;i++){
-      var n = drawQ[i];
+    for(i=0;i<nodeQ.length;i++){
+      var n = nodeQ[i];
       drawNode(n.x, n.y);
     }
-
+    drawLineQ();
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
     //draw two lines, one in the X and one in the Y 
     context.beginPath(); //begin first line, the X line
-    var n = drawQ[drawQ.length-1];
+    var n = nodeQ[nodeQ.length-1];
     context.moveTo(n.x, n.y); //first point is at last node on the stack
     context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
     context.stroke();
     context.beginPath(); //next line is the Y line
     context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
-    context.lineTo(mousePos.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
+    context.lineTo((Math.floor(mousePos.x/opts.distance))*opts.distance, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
     context.stroke();
+    
+
     }
   //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
   //console.log(message);
@@ -220,8 +207,8 @@ $(document).ready(function(){
 
 var AddingNotes;
 var AddVoiceClicked;
-var drawQ = []; //keep track of each thing we draw so we can erase it if we need to
-var noteQ = []; //keep track of each line drawn
+var nodeQ = []; //keep track of each node drawn
+var lineQ = []; //keep track of each line drawn
 $("#addvoice").click(function(){
   AddVoiceClicked = 1;
 });
@@ -231,7 +218,7 @@ $("#grid").click(function(){
   var context = canvas.getContext('2d');
   if(AddVoiceClicked){
     drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
-    drawQ.push({
+    nodeQ.push({
       x: 0,
       y: (Math.floor(mousePos.y/opts.distance))*opts.distance
     });
@@ -240,26 +227,30 @@ $("#grid").click(function(){
   } else if(AddingNotes){
     //draw the current line, snapped to grid
     context.beginPath(); //begin first line, the X line
-    var n = drawQ[drawQ.length-1];
+    var n = nodeQ[nodeQ.length-1]; //subtract 1 because indexing starts at 0
     context.moveTo(n.x, n.y); //first point is at last node on the stack
     context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
     context.stroke();
     context.beginPath(); //next line is the Y line
     context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
-    context.lineTo(mousePos.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
+    context.lineTo((Math.floor(mousePos.x/opts.distance))*opts.distance, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
     context.stroke();
-    noteQ.push({
+    lineQ.push({
       x1: n.x,
       y1: n.y,
       x2: n.x,
       y2: (Math.floor(mousePos.y/opts.distance))*opts.distance,
       x3: n.x,
       y3: (Math.floor(mousePos.y/opts.distance))*opts.distance,
-      x4: mousePos.x,
+      x4: (Math.floor(mousePos.x/opts.distance))*opts.distance,
       y4: (Math.floor(mousePos.y/opts.distance))*opts.distance
     });
     //draw node at end of last note
-
+    drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); 
+    nodeQ.push({
+      x: (Math.floor(mousePos.x/opts.distance))*opts.distance,
+      y: (Math.floor(mousePos.y/opts.distance))*opts.distance
+    });
 
   }
 });
@@ -307,6 +298,22 @@ function redrawCanvas(){
 
   // Restore the transform
   ctx.restore();
+}
+
+function drawLineQ(){
+ //redraw already placed notes
+  if(lineQ.length){
+    for(i=0;i<lineQ.length;i++){
+      var n = lineQ[i];
+      context.moveTo(n.x1, n.y1); //first point is at last node on the stack
+      context.lineTo(n.x2, n.y2); //second point is the y component of current mouse position
+      context.stroke();
+      context.beginPath(); //next line is the Y line
+      context.moveTo(n.x3, n.y3); //first point is X component of current mouse position
+      context.lineTo(n.x4, n.y4); //second point is current mouse position
+      context.stroke();
+    }
+  }
 }
 
 // draw all circles[]
