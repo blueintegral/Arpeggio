@@ -282,6 +282,7 @@ $("#play").click(function(){
 var notelookup = [440, 392, 349, 330, 294, 262, 247, 220, 196, 175, 165, 147, 131, 123]; //from http://www.phy.mtu.edu/~suits/notefreqs.html
 var notelength;
 var notePitch;
+var noteposition = 0;
 function playMusic() {
     var Synth = function(audiolet, frequency) {
         AudioletGroup.call(this, audiolet, 0, 1);
@@ -314,23 +315,16 @@ var SchedulerApp = function() {
           notePitch = notelookup[(lineQ[i].y1)/50];//note pitch is the y value from each object, scaled so 0 = A, next division (50) = B, etc
           console.log(notePitch);
           //this.audiolet.scheduler.addAbsolute(0, function() {
-          this.audiolet.scheduler.addAbsolute(notelength/gridScale, function(){
+          this.audiolet.scheduler.addAbsolute(noteposition, function(){ //note length should be notelength/gridScale
             this.playNote(notePitch);
+            console.log("just played");
+            console.log(notePitch);
           }.bind(this));
+          noteposition++;
         }
 
 
-        // // Play one note on beat 0
-        // this.audiolet.scheduler.addAbsolute(0, function() {
-        //     this.playNote(200);
-        // }.bind(this));
-
-        // // Go to play a lower note on beat 1, but cancel it!
-        // var event = this.audiolet.scheduler.addAbsolute(1, function() {
-        //     this.playNote(100);
-        // }.bind(this));
-
-        // this.audiolet.scheduler.remove(event);
+      
 
         // // Play two notes one after another on beats 2 and 3
         // this.audiolet.scheduler.addAbsolute(2, function() {
