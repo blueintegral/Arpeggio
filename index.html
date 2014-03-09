@@ -95,7 +95,9 @@
 <button type="button" class="btn btn-default btn-xs" id="stepforward">
   <span class="glyphicon glyphicon-step-forward"></span>
 </button>
-
+<button type="button" class="btn btn-default btn-xs" id="undo">
+  <span class="glyphicon glyphicon-arrow-left"></span>
+</button>
 
       </div>
 
@@ -179,40 +181,20 @@ $(document).ready(function(){
     if(mousePos.x && mousePos.y) {     
       redrawCanvas();
       new Grid(opts).draw(context); //Redraw grid
-      //now redraw already places nodes
-      for(i=0;i<nodeQ.length;i++){
-        var n = nodeQ[i];
-        drawNode(n.x, n.y);
-      }
-      //redraw already placed notes
-      drawLineQ();
+      drawNodeQ(); //now redraw already placed nodes
+      drawLineQ(); //redraw already placed notes
       drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); //draw node at current mouse
     }
   }
   if(AddingNotes){
     redrawCanvas();
     new Grid(opts).draw(context); //Redraw grid
-    //now redraw nodes
-    for(i=0;i<nodeQ.length;i++){
-      var n = nodeQ[i];
-      drawNode(n.x, n.y);
-    }
-    drawLineQ();
+    drawNodeQ(); //now redraw already placed nodes
+    drawLineQ(); 
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
     //draw two lines, one in the X and one in the Y 
-    context.beginPath(); //begin first line, the X line
-    var n = nodeQ[nodeQ.length-1];
-    context.moveTo(n.x, n.y); //first point is at last node on the stack
-    context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
-    context.stroke();
-    context.beginPath(); //next line is the Y line
-    context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
-    context.lineTo((Math.floor(mousePos.x/opts.distance))*opts.distance, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
-    context.stroke();
-    
+    drawLineToMouse(nodeQ.length-1, mousePos.x, mousePos.y); //This guy draws the X and Y component lines to the mouse position   
     }
-  //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-  //console.log(message);
   }, false); //end of event listener
 });
 
@@ -236,16 +218,8 @@ $("#grid").click(function(){
     AddVoiceClicked = 0;
     AddingNotes = 1;
   } else if(AddingNotes){
-    //draw the current line, snapped to grid
-    context.beginPath(); //begin first line, the X line
+    drawLineToMouse(nodeQ.length-1, mousePos.x, mousePos.y); //draw the current line, snapped to grid
     var n = nodeQ[nodeQ.length-1]; //subtract 1 because indexing starts at 0
-    context.moveTo(n.x, n.y); //first point is at last node on the stack
-    context.lineTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is the y component of current mouse position
-    context.stroke();
-    context.beginPath(); //next line is the Y line
-    context.moveTo(n.x, (Math.floor(mousePos.y/opts.distance))*opts.distance); //first point is X component of current mouse position
-    context.lineTo((Math.floor(mousePos.x/opts.distance))*opts.distance, (Math.floor(mousePos.y/opts.distance))*opts.distance); //second point is current mouse position
-    context.stroke();
     lineQ.push({
       x1: n.x,
       y1: n.y,
@@ -272,10 +246,57 @@ $("#grid").click(function(){
 //use Audiolet scheduler to add notes at the right frequency and length
 //and then call playExample() to start playing
 
+$("#stepback").click(function(){
+  //seek to beginning of piece
+  //todo
+});
+
+$("#back").click(function(){
+  //seek back one measure
+  //todo
+});
+
 $("#play").click(function(){
   console.log("Building synthesis...");
   playMusic();  
   console.log("Finished playing.");
+});
+
+$("#pause").click(function(){
+  //this doesn't work yet
+  console.log("Paused");
+  AudioletDevice.prototype.pause = function() {
+    this.paused = true;
+  };
+});
+
+$("#stop").click(function(){
+  //todo
+});
+
+$("#forward").click(function(){
+  //seek forward one measure
+  //todo
+});
+
+$("#stepforward").click(function(){
+  //seek to end of piece
+  //todo
+});
+
+$("#undo").click(function(){
+  //undo last drawing
+  if(nodeQ){
+    nodeQ.pop();
+    console.log("popped nodeQ");
+  }
+  if(lineQ){
+    lineQ.pop();
+    console.log("popped lineQ");
+  }
+  //redraw everything
+  drawNodeQ();
+  drawLineQ();
 });
 
 //assuming for now that the note nearest the top of the screen is A440 and goes down in whole steps from there
@@ -298,13 +319,10 @@ function playMusic() {
                     this.remove.bind(this));
             }.bind(this)
         );
-
         // Main signal path
         this.saw.connect(this.gain);
         this.gain.connect(this.outputs[0]);
-
-        // Envelope
-        this.env.connect(this.gain, 0, 1);
+        this.env.connect(this.gain, 0, 1); // Envelope
     }
     extend(Synth, AudioletGroup);
 
@@ -328,48 +346,37 @@ var SchedulerApp = function() {
                 }.bind(this)
             );
         }.bind(this));
-
-
-
-
-
-        // // Play two notes one after another on beats 2 and 3
-        // this.audiolet.scheduler.addAbsolute(2, function() {
-        //     // First note
-        //     this.playNote(300);
-        //     // Schedule second note for one beat later
-        //     this.audiolet.scheduler.addRelative(1, function() {
-        //         this.playNote(400);
-        //     }.bind(this));
-        // }.bind(this));
-
-        // // On beat 4 play a pattern of notes twice through as eighth notes
-        // this.audiolet.scheduler.addAbsolute(4, function() {
-        //     var frequencyPattern = new PSequence([200, 300, 400, 500], 2);
-        //     this.audiolet.scheduler.play([frequencyPattern], 0.5,
-        //         function(frequency) {
-        //             this.playNote(frequency);
-        //         }.bind(this)
-        //     );
-        // }.bind(this));
-
-
     }
-
     SchedulerApp.prototype.playNote = function(frequency) {
         var synth = new Synth(this.audiolet, frequency);
         synth.connect(this.audiolet.output);
     }
-
     var app = new SchedulerApp();
-
 }
-
 
 
 //Function declarations
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
+function drawNodeQ(){
+  for(i=0;i<nodeQ.length;i++){
+    var n = nodeQ[i];
+    drawNode(n.x, n.y);
+  }
+}
+
+function drawLineToMouse(nodePosition, mouseX, mouseY){
+ context.beginPath(); //begin first line, the X line
+  var n = nodeQ[nodePosition];
+  context.moveTo(n.x, n.y); //first point is at last node on the stack
+  context.lineTo(n.x, (Math.floor(mouseY/opts.distance))*opts.distance); //second point is the y component of current mouse position
+  context.stroke();
+  context.beginPath(); //next line is the Y line
+  context.moveTo(n.x, (Math.floor(mouseY/opts.distance))*opts.distance); //first point is X component of current mouse position
+  context.lineTo((Math.floor(mouseX/opts.distance))*opts.distance, (Math.floor(mouseY/opts.distance))*opts.distance); //second point is current mouse position
+  context.stroke();
+}
+
 function drawNode(mouseX, mouseY){
   var c = document.getElementById("grid");
   var ctx = c.getContext("2d");
