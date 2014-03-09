@@ -143,8 +143,6 @@ canvas.style.float= "right";
 var $canvas = $("#grid");
 
 var context = canvas.getContext("2d");
-
-
 new Grid(opts).draw(context);
 
 //draw note labels
@@ -288,11 +286,11 @@ $("#undo").click(function(){
   //undo last drawing
   if(nodeQ){
     nodeQ.pop();
-    console.log("popped nodeQ");
+    //console.log("popped nodeQ");
   }
   if(lineQ){
     lineQ.pop();
-    console.log("popped lineQ");
+    //console.log("popped lineQ");
   }
   //redraw everything
   drawNodeQ();
@@ -371,10 +369,12 @@ function drawLineToMouse(nodePosition, mouseX, mouseY){
   context.moveTo(n.x, n.y); //first point is at last node on the stack
   context.lineTo(n.x, (Math.floor(mouseY/opts.distance))*opts.distance); //second point is the y component of current mouse position
   context.stroke();
+  if(mouseX >= n.x){
   context.beginPath(); //next line is the Y line
   context.moveTo(n.x, (Math.floor(mouseY/opts.distance))*opts.distance); //first point is X component of current mouse position
   context.lineTo((Math.floor(mouseX/opts.distance))*opts.distance, (Math.floor(mouseY/opts.distance))*opts.distance); //second point is current mouse position
   context.stroke();
+  }
 }
 
 function drawNode(mouseX, mouseY){
