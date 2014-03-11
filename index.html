@@ -238,11 +238,9 @@ $("#grid").click(function(){
   }
 });
  
-//Audio and sound synthesis
+//Navigation and buttons
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
-//use Audiolet scheduler to add notes at the right frequency and length
-//and then call playExample() to start playing
 
 $("#stepback").click(function(){
   //seek to beginning of piece
@@ -298,6 +296,24 @@ $("#undo").click(function(){
   drawNodeQ();
   drawLineQ();
 });
+
+$(document).keyup(function(e) {
+  if (e.keyCode == 27) { //if esc is pressed
+    AddingNotes = 0; //stop adding notes
+    redrawCanvas(); //redraw everything
+    redrawGrid();
+    drawNodeQ();
+    drawLineQ();
+  }
+});
+
+
+//Audio and sound synthesis
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+//use Audiolet scheduler to add notes at the right frequency and length
+//and then call playExample() to start playing
+
 
 //assuming for now that the note nearest the top of the screen is A440 and goes down in whole steps from there
 var notelookup = [440, 392, 349, 330, 294, 262, 247, 220, 196, 175, 165, 147, 131, 123]; //from http://www.phy.mtu.edu/~suits/notefreqs.html
