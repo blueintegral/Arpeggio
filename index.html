@@ -95,9 +95,17 @@
 <button type="button" class="btn btn-default btn-xs" id="stepforward">
   <span class="glyphicon glyphicon-step-forward"></span>
 </button>
+&nbsp&nbsp&nbsp&nbsp
 <button type="button" class="btn btn-default btn-xs" id="undo">
   <span class="glyphicon glyphicon-arrow-left"></span>
 </button>
+<button type="button" class="btn btn-default btn-xs" id="save">
+  <span class="glyphicon glyphicon-floppy-save"></span>
+</button>
+<button type="button" class="btn btn-default btn-xs" id="open">
+  <span class="glyphicon glyphicon-floppy-open"></span>
+</button>
+
 
       </div>
 
@@ -297,6 +305,23 @@ $("#undo").click(function(){
   drawLineQ();
 });
 
+$("#save").click(function(){
+  //export as json
+  var nodes = JSON.stringify(nodeQ);
+  var lines = JSON.stringify(lineQ);
+  console.log("Saved (but not really).");
+  $("#notification").slideDown("slow");
+  setTimeout(function() { 
+    $("#notification").slideUp("slow"); 
+    }, 2000);
+});
+
+$("#open").click(function(){
+  //import as json
+  nodeQ = jQuery.parseJSON(nodes);
+  lineQ = jQuery.parseJSON(lines);
+});
+
 $(document).keyup(function(e) {
   if (e.keyCode == 27) { //if esc is pressed
     AddingNotes = 0; //stop adding notes
@@ -306,6 +331,25 @@ $(document).keyup(function(e) {
     drawLineQ();
   }
 });
+
+$(document).ready(function(){ //notifications
+  $("<div id='notification'>Saved</div>").css({
+    position:"fixed",
+    top:"50px",
+    left:"0px",
+    height:"25px",
+    width:"100%",
+    backgroundColor:"#41C400",
+    color:"black",
+    padding:"5px",
+    fontWeight:"bold",
+    textAlign:"center",
+    display:"none", 
+    opacity:".7"
+    }).appendTo("body");
+});
+
+
 
 
 //Audio and sound synthesis
