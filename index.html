@@ -143,7 +143,7 @@ canvas.style.float= "right";
 var $canvas = $("#grid");
 
 var context = canvas.getContext("2d");
-new Grid(opts).draw(context);
+redrawGrid();
 
 //draw note labels
 var notes = ['A','G','F','E','D','C','B'];
@@ -178,7 +178,7 @@ $(document).ready(function(){
   if(AddVoiceClicked){
     if(mousePos.x && mousePos.y) {     
       redrawCanvas();
-      new Grid(opts).draw(context); //Redraw grid
+      redrawGrid(); //Redraw grid
       drawNodeQ(); //now redraw already placed nodes
       drawLineQ(); //redraw already placed notes
       drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); //draw node at current mouse
@@ -186,7 +186,7 @@ $(document).ready(function(){
   }
   if(AddingNotes){
     redrawCanvas();
-    new Grid(opts).draw(context); //Redraw grid
+    redrawGrid(); //Redraw grid
     drawNodeQ(); //now redraw already placed nodes
     drawLineQ(); 
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
@@ -293,6 +293,8 @@ $("#undo").click(function(){
     //console.log("popped lineQ");
   }
   //redraw everything
+  redrawCanvas();
+  redrawGrid(); //Redraw grid
   drawNodeQ();
   drawLineQ();
 });
@@ -356,6 +358,10 @@ var SchedulerApp = function() {
 //Function declarations
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
+function redrawGrid(){
+  new Grid(opts).draw(context);
+}
+
 function drawNodeQ(){
   for(i=0;i<nodeQ.length;i++){
     var n = nodeQ[i];
