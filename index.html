@@ -74,6 +74,7 @@
       <div class="starter-template">
         <h1>Arpeggio</h1>
         <p class="lead">An intuitive way to capture the music you hear in your head on paper. </p>
+
 <button type="button" class="btn btn-default btn-xs">
   <span class="glyphicon glyphicon-step-backward" id="stepback"></span>
 </button>
@@ -105,6 +106,8 @@
 <button type="button" class="btn btn-default btn-xs" id="open">
   <span class="glyphicon glyphicon-floppy-open"></span>
 </button>
+
+<div id="gridsizetext">Grid size = whole note</div>
 
 
       </div>
@@ -156,7 +159,7 @@ redrawGrid();
 //draw note labels
 var notes = ['A','G','F','E','D','C','B'];
 for(var i=0; i<((canvas.height-1)/opts.distance);i++){
-  $('#left').append('<div style=\"position:absolute; top:'+(295+(opts.distance*i))+'px; left:130px; \"><b>'+notes[i%7]+'</b></div>'); 
+  $('#left').append('<div style=\"position:absolute; top:'+(315+(opts.distance*i))+'px; left:130px; \"><b>'+notes[i%7]+'</b></div>'); 
 }
 
 
@@ -349,7 +352,43 @@ $(document).ready(function(){ //notifications
     }).appendTo("body");
 });
 
-
+$('#grid').on('DOMMouseScroll mousewheel', function (e) {
+  if(e.originalEvent.detail > 0 || e.originalEvent.wheelDelta < 0) { //alternative options for wheelData: wheelDeltaX & wheelDeltaY
+    //scroll down
+    if(gridScale > 1){ //grid should be no smaller than 1 (max zoom out, each square is whole note)
+      gridScale = gridScale - 1; 
+    }
+    console.log("gridScale is now");
+    console.log(gridScale);
+  } else {
+    //scroll up
+    if(gridScale < 6){ //grid should be no larger than 6 (max zoom in, each square is a 32nd note)
+      gridScale = gridScale + 1;
+    }
+    console.log("gridScale is now");
+    console.log(gridScale);
+  }
+  if(gridScale == 1){
+    $("#gridsizetext").html("Grid square: whole note");
+  }
+  if(gridScale == 2){
+    $("#gridsizetext").html('Grid square: 1/2 note'); 
+  }
+  if(gridScale == 3){
+    $("#gridsizetext").html("Grid square: 1/4 note");
+  }
+  if(gridScale == 4){
+    $("#gridsizetext").html("Grid square: 1/8 note");
+  }
+  if(gridScale == 5){
+    $("#gridsizetext").html("Grid square: 1/16 note");
+  }
+  if(gridScale == 6){
+    $("#gridsizetext").html("Grid square: 1/32 note");
+  }
+  //prevent page fom scrolling
+  return false;
+});
 
 
 //Audio and sound synthesis
