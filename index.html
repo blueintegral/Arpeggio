@@ -150,6 +150,7 @@ canvas.height = $(window).height() - ($(window).height() % opts.distance) - (opt
 canvas.style.position = "relative";
 canvas.style.top = " 0px";
 canvas.style.left = "100px";
+var canvasleft = 100;
 canvas.style.float= "right";
 var $canvas = $("#grid");
 
@@ -338,6 +339,8 @@ $(document).keyup(function(e) {
 $("#more").click(function(){
   //add another chunk of staff
   canvas.width = canvas.width + 500; //add another 50 grid squares
+  canvasleft = canvasleft + canvas.width;
+  canvas.style.left = canvasleft/5 + "px";//shift it over to the right by that amount too
   redrawGrid();
 });
 
