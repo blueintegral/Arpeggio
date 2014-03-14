@@ -140,8 +140,8 @@
 ////////////////////////////////////////////////////////////////////
 var canvas = document.getElementById("grid");
 var opts = {
-  distance : 50,
-  lineWidth : 1,
+  distance : 50, //distance between grid squares
+  lineWidth : 1, 
   gridColor  : "#000000",
   caption : false
 };
@@ -338,9 +338,14 @@ $(document).keyup(function(e) {
 
 $("#more").click(function(){
   //add another chunk of staff
-  canvas.width = canvas.width + 500; //add another 50 grid squares
-  canvasleft = canvasleft + canvas.width;
-  canvas.style.left = canvasleft/5 + "px";//shift it over to the right by that amount too
+  console.log("extending staff");
+  var canvas = document.getElementById("grid");
+  var moreAmount = 500; //add another 50 grid square each time button is clicked
+  console.log(canvas.width);
+  canvas.width = canvas.width + moreAmount; //add another 50 grid squares
+  console.log(canvas.width);
+  canvasleft = canvasleft + moreAmount;
+  canvas.style.left = canvasleft + "px";//shift it over to the right by that amount too canvasleft/5
   redrawGrid();
 });
 
