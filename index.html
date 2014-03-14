@@ -191,16 +191,16 @@ $(document).ready(function(){
     if(mousePos.x && mousePos.y) {     
       redrawCanvas();
       redrawGrid(); //Redraw grid
-      drawNodeQ(); //now redraw already placed nodes
-      drawLineQ(); //redraw already placed notes
+      drawNodeQ(gridScale); //now redraw already placed nodes
+      drawLineQ(gridScale); //redraw already placed notes
       drawNode(0, (Math.floor(mousePos.y/opts.distance))*opts.distance); //draw node at current mouse
     }
   }
   if(AddingNotes){
     redrawCanvas();
     redrawGrid(); //Redraw grid
-    drawNodeQ(); //now redraw already placed nodes
-    drawLineQ(); 
+    drawNodeQ(gridScale); //now redraw already placed nodes
+    drawLineQ(gridScale); 
     //Want note lines to snap to grid and be perpendicular to each other, so we need to
     //draw two lines, one in the X and one in the Y 
     drawLineToMouse(nodeQ.length-1, mousePos.x, mousePos.y); //This guy draws the X and Y component lines to the mouse position   
@@ -305,8 +305,8 @@ $("#undo").click(function(){
   //redraw everything
   redrawCanvas();
   redrawGrid(); //Redraw grid
-  drawNodeQ();
-  drawLineQ();
+  drawNodeQ(gridScale);
+  drawLineQ(gridScale);
 });
 
 $("#save").click(function(){
@@ -331,8 +331,8 @@ $(document).keyup(function(e) {
     AddingNotes = 0; //stop adding notes
     redrawCanvas(); //redraw everything
     redrawGrid();
-    drawNodeQ();
-    drawLineQ();
+    drawNodeQ(gridScale);
+    drawLineQ(gridScale);
   }
 });
 
@@ -347,6 +347,8 @@ $("#more").click(function(){
   canvasleft = canvasleft + moreAmount;
   canvas.style.left = canvasleft + "px";//shift it over to the right by that amount too canvasleft/5
   redrawGrid();
+  drawNodeQ(gridScale);
+  drawLineQ(gridScale);
 });
 
 $(document).ready(function(){ //notifications
@@ -400,6 +402,10 @@ $('#grid').on('DOMMouseScroll mousewheel', function (e) {
   if(gridScale == 6){
     $("#gridsizetext").html("Grid square: 1/32 note");
   }
+  redrawCanvas();
+  redrawGrid();
+  drawNodeQ(gridScale);
+  drawLineQ(gridScale);
   //prevent page fom scrolling
   return false;
 });
@@ -481,10 +487,10 @@ function redrawGrid(){
   new Grid(opts).draw(context);
 }
 
-function drawNodeQ(){
+function drawNodeQ(gridScale){
   for(i=0;i<nodeQ.length;i++){
     var n = nodeQ[i];
-    drawNode(n.x, n.y);
+      drawNode(n.x*gridScale, n.y);
   }
 }
 
@@ -540,18 +546,18 @@ function redrawCanvas(){
   ctx.restore();
 }
 
-function drawLineQ(){
+function drawLineQ(gridScale){
  //redraw already placed notes
   if(lineQ.length){
     for(i=0;i<lineQ.length;i++){
       var n = lineQ[i];
       //context.setLineDash([1,2]);
-      context.moveTo(n.x1, n.y1); //first point is at last node on the stack
-      context.lineTo(n.x2, n.y2); //second point is the y component of current mouse position
+      context.moveTo(n.x1*gridScale, n.y1); //first point is at last node on the stack
+      context.lineTo(n.x2*gridScale, n.y2); //second point is the y component of current mouse position
       context.stroke();
       context.beginPath(); //next line is the Y line
-      context.moveTo(n.x3, n.y3); //first point is X component of current mouse position
-      context.lineTo(n.x4, n.y4); //second point is current mouse position
+      context.moveTo(n.x3*gridScale, n.y3); //first point is X component of current mouse position
+      context.lineTo(n.x4*gridScale, n.y4); //second point is current mouse position
       context.stroke();
     }
   }
