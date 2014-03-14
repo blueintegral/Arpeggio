@@ -107,7 +107,7 @@
   <span class="glyphicon glyphicon-floppy-open"></span>
 </button>
 
-<div id="gridsizetext">Grid size = whole note</div>
+<div id="gridsizetext"><b>Grid size = whole note</b></div>
 
 
       </div>
@@ -385,22 +385,22 @@ $('#grid').on('DOMMouseScroll mousewheel', function (e) {
     console.log(gridScale);
   }
   if(gridScale == 1){
-    $("#gridsizetext").html("Grid square: whole note");
+    $("#gridsizetext").html("<b>Grid square: whole note</b>");
   }
   if(gridScale == 2){
-    $("#gridsizetext").html('Grid square: 1/2 note'); 
+    $("#gridsizetext").html("<b>Grid square: 1/2 note</b>"); 
   }
   if(gridScale == 3){
-    $("#gridsizetext").html("Grid square: 1/4 note");
+    $("#gridsizetext").html("<b>Grid square: 1/4 note</b>");
   }
   if(gridScale == 4){
-    $("#gridsizetext").html("Grid square: 1/8 note");
+    $("#gridsizetext").html("<b>Grid square: 1/8 note</b>");
   }
   if(gridScale == 5){
-    $("#gridsizetext").html("Grid square: 1/16 note");
+    $("#gridsizetext").html("<b>Grid square: 1/16 note</b>");
   }
   if(gridScale == 6){
-    $("#gridsizetext").html("Grid square: 1/32 note");
+    $("#gridsizetext").html("<b>Grid square: 1/32 note</b>");
   }
   redrawCanvas();
   redrawGrid();
