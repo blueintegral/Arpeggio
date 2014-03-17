@@ -446,6 +446,7 @@ var notelength;
 var notePitch;
 var noteposition = 0;
 var noteFreqs = [];
+var durations = [];
 function playMusic() {
     var Synth = function(audiolet, frequency) {
         AudioletGroup.call(this, audiolet, 0, 1);
@@ -471,22 +472,26 @@ var SchedulerApp = function() {
         this.audiolet = new Audiolet();
 
         for(i=0;i<lineQ.length;i++){  //iterate through each note placed and create a note schedule for synthesis
-          notelength = lineQ[i].y4 - lineQ[i].y3; //note length is the x value from each object in the line list
+          notelength = lineQ[i].x4 - lineQ[i].x3; //note length is the x value from each object in the line list
           notePitch = notelookup[(lineQ[i].y1)/50];//note pitch is the y value from each object, scaled so 0 = A, next division (50) = B, etc
           console.log(notePitch);
           noteFreqs[i] = notePitch;
+          durations[i] = notelength;
           noteposition++;
         }
 
+        for(j=1;j<5;j++){
         // On beat 1 play a pattern of notes twice through as eighth notes
-        this.audiolet.scheduler.addAbsolute(1, function() {
+        this.audiolet.scheduler.addAbsolute(j, function() {
             var frequencyPattern = new PSequence(noteFreqs, 1);
-            this.audiolet.scheduler.play([frequencyPattern], 0.5,
+            this.audiolet.scheduler.play([frequencyPattern], .5,
                 function(frequency) {
                     this.playNote(frequency);
                 }.bind(this)
             );
         }.bind(this));
+        }
+
     }
     SchedulerApp.prototype.playNote = function(frequency) {
         var synth = new Synth(this.audiolet, frequency);
