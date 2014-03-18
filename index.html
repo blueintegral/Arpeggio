@@ -472,26 +472,53 @@ var SchedulerApp = function() {
         this.audiolet = new Audiolet();
 
         for(i=0;i<lineQ.length;i++){  //iterate through each note placed and create a note schedule for synthesis
-          notelength = lineQ[i].x4 - lineQ[i].x3; //note length is the x value from each object in the line list
+          startindex = i;
+          currentNote = lineQ[i];
+          while(lineQ[i] == lineQ[i+1]){
+            i++;
+          }
+          notelength = lineQ[i].x4 - lineQ[startindex].x3; //note length is the x value from each object in the line list
           notePitch = notelookup[(lineQ[i].y1)/50];//note pitch is the y value from each object, scaled so 0 = A, next division (50) = B, etc
+          console.log("Pitch is");
           console.log(notePitch);
+          console.log("length is");
+          console.log(notelength);
           noteFreqs[i] = notePitch;
-          durations[i] = notelength;
+          durations[i] = notelength/50;
           noteposition++;
         }
 
-        for(j=1;j<5;j++){
-        // On beat 1 play a pattern of notes twice through as eighth notes
-        this.audiolet.scheduler.addAbsolute(j, function() {
-            var frequencyPattern = new PSequence(noteFreqs, 1);
-            this.audiolet.scheduler.play([frequencyPattern], .5,
-                function(frequency) {
-                    this.playNote(frequency);
-                }.bind(this)
-            );
-        }.bind(this));
-        }
+        
+         //for(j=1;j<durations.length;j++){
+        //   console.log(noteFreqs);
+        //   temparray = noteFreqs.slice(j-1, j); //split note freqs array into individual arrays
+        // // On beat 1 play a pattern of notes twice through as eighth notes
+        //  console.log(temparray);
+        // this.audiolet.scheduler.addAbsolute(j, function() {
+        //    console.log(temparray);
+        //     var frequencyPattern = new PSequence(temparray, j); //current beat is index of loop, j
+           
+        //     this.audiolet.scheduler.play([frequencyPattern], durations[j],
+        //         function(frequency) {
+        //             this.playNote(frequency);
+        //         }.bind(this)
+        //     );
+        // }.bind(this));
+        // }
+        //var melodyA = new PSequence(noteFreqs);
+         var melodyA = new PSequence(noteFreqs);
+        //var melodyB = new PSequence([349, 330, 349, 392]);
+        //var melodyC = new PSequence([440, 392, 349, 330]);
+        var frequencyPattern = new PChoose([melodyA], 1);
 
+        var durationPattern = new PChoose([new PSequence(durations)],1);
+
+        this.audiolet.scheduler.play([frequencyPattern], durationPattern,
+            function(frequency) {
+                var synth = new Synth(this.audiolet, frequency);
+                synth.connect(this.audiolet.output);
+            }.bind(this)
+        );
     }
     SchedulerApp.prototype.playNote = function(frequency) {
         var synth = new Synth(this.audiolet, frequency);
