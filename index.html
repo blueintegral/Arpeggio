@@ -47,6 +47,7 @@
   </head>
 
   <body>
+    <audio id="sample" src="http://d2c3nvafyekx5z.cloudfront.net/soundfonts/piano.oga" preload></audio>
     <button type="button" class="btn btn-default btn-xs" style="position:fixed; top:300px; right:10px;">
       <span class="glyphicon glyphicon-chevron-right" id="more"></span>
     </button>
@@ -133,7 +134,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="dist/js/bootstrap.min.js"></script>
     <script src="dist/js/grid.min.js"></script>
-    <script src="dist/js/audiolet/audiolet/Audiolet.js"></script>
 
     <script>
 //Draw grid
@@ -276,13 +276,11 @@ $("#play").click(function(){
 $("#pause").click(function(){
   //this doesn't work yet
   console.log("Paused");
-  AudioletDevice.prototype.pause = function() {
-    this.paused = true;
-  };
+  audio.pause();
 });
 
 $("#stop").click(function(){
-  //todo
+  audio.stop();
 });
 
 $("#forward").click(function(){
@@ -447,30 +445,10 @@ var notePitch;
 var noteposition = 0;
 var noteFreqs = [];
 var durations = [];
+
 function playMusic() {
-    var Synth = function(audiolet, frequency) {
-        AudioletGroup.call(this, audiolet, 0, 1);
-        // Synthesize with basic triangle wave
-        this.saw = new Saw(audiolet, frequency);
-
-        // Gain envelope
-        this.gain = new Gain(audiolet);
-        this.env = new PercussiveEnvelope(audiolet, 1, 0.1, 0.1,
-            function() {
-                this.audiolet.scheduler.addRelative(0,
-                    this.remove.bind(this));
-            }.bind(this)
-        );
-        // Main signal path
-        this.saw.connect(this.gain);
-        this.gain.connect(this.outputs[0]);
-        this.env.connect(this.gain, 0, 1); // Envelope
-    }
-    extend(Synth, AudioletGroup);
-
-var SchedulerApp = function() {
-        this.audiolet = new Audiolet();
-
+    
+        //Convert current staff into data we can synthesize
         for(i=0;i<lineQ.length;i++){  //iterate through each note placed and create a note schedule for synthesis
           startindex = i;
           currentNote = lineQ[i];
@@ -488,43 +466,96 @@ var SchedulerApp = function() {
           noteposition++;
         }
 
+        if(noteFreqs.length != durations.length){
+          console.log("ERROR: Durations and Freqs list do not match!");
+        }
+
+        for(j=0;j<durations.length;j++){
+          //iterate through each note and select the right chunk from the piano file to play
+          if(durations[j] > 50){ //tied whole notes
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+          if(durations[j] == 50){ //whole note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+          if(durations[j] == 25){ //half note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+          if(durations[j] == 12.5){ //quarter note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+
+          if(durations[j] == 6.25){ //eigth note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+
+          if(durations[j] == 3.125){ //sixteenth note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+          if(durations[j] == 1.5625){ //thirtysecond note
+              audio.currentTime = 161;
+              audio.play();
+              int = setInterval(function() {
+                if (audio.currentTime > 0.4) {
+                  audio.pause();
+                 clearInterval(int);
+                 }
+             }, 10);
+          }
+
+
+
+        }
         
-         //for(j=1;j<durations.length;j++){
-        //   console.log(noteFreqs);
-        //   temparray = noteFreqs.slice(j-1, j); //split note freqs array into individual arrays
-        // // On beat 1 play a pattern of notes twice through as eighth notes
-        //  console.log(temparray);
-        // this.audiolet.scheduler.addAbsolute(j, function() {
-        //    console.log(temparray);
-        //     var frequencyPattern = new PSequence(temparray, j); //current beat is index of loop, j
-           
-        //     this.audiolet.scheduler.play([frequencyPattern], durations[j],
-        //         function(frequency) {
-        //             this.playNote(frequency);
-        //         }.bind(this)
-        //     );
-        // }.bind(this));
-        // }
-        //var melodyA = new PSequence(noteFreqs);
-         var melodyA = new PSequence(noteFreqs);
-        //var melodyB = new PSequence([349, 330, 349, 392]);
-        //var melodyC = new PSequence([440, 392, 349, 330]);
-        var frequencyPattern = new PChoose([melodyA], 1);
-
-        var durationPattern = new PChoose([new PSequence(durations)],1);
-
-        this.audiolet.scheduler.play([frequencyPattern], durationPattern,
-            function(frequency) {
-                var synth = new Synth(this.audiolet, frequency);
-                synth.connect(this.audiolet.output);
-            }.bind(this)
-        );
-    }
-    SchedulerApp.prototype.playNote = function(frequency) {
-        var synth = new Synth(this.audiolet, frequency);
-        synth.connect(this.audiolet.output);
-    }
-    var app = new SchedulerApp();
+        
 }
 
 
