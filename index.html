@@ -442,11 +442,15 @@ $(document).scroll(function(){
 var notelookup = [440, 392, 349, 330, 294, 262, 247, 220, 196, 175, 165, 147, 131, 123]; //from http://www.phy.mtu.edu/~suits/notefreqs.html
 var notelength;
 var notePitch;
+var noteTime;
 var noteposition = 0;
 var noteFreqs = [];
 var durations = [];
+var noteTimes = [];
+var endtime;
 //                     A    G    F    E    D    C    B    A    G     F
 var notetimelookup = [161, 155, 148, 145, 141, 131, 128, 121, 114, 107.5]; //first entry is time in seconds of highest note (A), second entry is next down (G), etc
+//each note lasts 3 seconds.
 
 function playMusic() {
         var audio = document.getElementById('sample'); //get handle of audio player
@@ -459,11 +463,13 @@ function playMusic() {
           }
           notelength = lineQ[i].x4 - lineQ[startindex].x3; //note length is the x value from each object in the line list
           notePitch = notelookup[(lineQ[i].y1)/50];//note pitch is the y value from each object, scaled so 0 = A, next division (50) = B, etc
+          noteTime = notetimelookup[(lineQ[i].y1)/50];
           console.log("Pitch is");
           console.log(notePitch);
           console.log("length is");
           console.log(notelength);
           noteFreqs[i] = notePitch;
+          noteTimes[i] = noteTime;
           durations[i] = notelength;
           noteposition++;
         }
@@ -475,7 +481,7 @@ function playMusic() {
         for(j=0;j<durations.length;j++){
           //iterate through each note and select the right chunk from the piano file to play
           if(durations[j] > 50){ //tied whole notes
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
               console.log("tied whole note");
               audio.play();
               int = setInterval(function() {
@@ -487,11 +493,12 @@ function playMusic() {
           }
 
           if(durations[j] == 50){ //whole note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("whole note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 165) {
+                if (audio.currentTime > endtime+3) {
                   audio.pause();
                  clearInterval(int);
                  }
@@ -499,11 +506,12 @@ function playMusic() {
           }
 
           if(durations[j] == 25){ //half note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("half note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 0.4) {
+                if (audio.currentTime > endtime+1.5) {
                   audio.pause();
                  clearInterval(int);
                  }
@@ -511,11 +519,12 @@ function playMusic() {
           }
 
           if(durations[j] == 12.5){ //quarter note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("quarter note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 0.4) {
+                if (audio.currentTime > endtime+.75) {
                   audio.pause();
                  clearInterval(int);
                  }
@@ -524,11 +533,12 @@ function playMusic() {
 
 
           if(durations[j] == 6.25){ //eigth note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("8th note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 0.4) {
+                if (audio.currentTime > endtime+.375) {
                   audio.pause();
                  clearInterval(int);
                  }
@@ -537,11 +547,12 @@ function playMusic() {
 
 
           if(durations[j] == 3.125){ //sixteenth note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("16th note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 0.4) {
+                if (audio.currentTime > endtime+.1875) {
                   audio.pause();
                  clearInterval(int);
                  }
@@ -549,11 +560,12 @@ function playMusic() {
           }
 
           if(durations[j] == 1.5625){ //thirtysecond note
-              audio.currentTime = 161;
+              audio.currentTime = noteTimes[j];
+              endtime = audio.currentTime;
               console.log("32nd note");
               audio.play();
               int = setInterval(function() {
-                if (audio.currentTime > 0.4) {
+                if (audio.currentTime > endtime+.094) {
                   audio.pause();
                  clearInterval(int);
                  }
