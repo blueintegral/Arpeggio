@@ -484,6 +484,7 @@ function playMusic() {
               console.log("tied whole note");
               for(k=0;k<durations[j]/50;k++){
                 audio.currentTime = noteTimes[j];
+                endtime = audio.currentTime;
                 audio.play();
                 int = setInterval(function() {
                   if (audio.currentTime > endtime+3) {
