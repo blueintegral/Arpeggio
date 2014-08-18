@@ -71,6 +71,15 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
+    <div class="about-text">
+      <b>Instructions:</b>
+      <br />
+      Dots represent the start of a note <br />
+      and the line behind it is the length. <br />
+       The length of a single grid square <br /> 
+       is under the playback buttons.
+
+    </div>
     <div class="container" id="controls">
       <div class="starter-template">
         <h1>Arpeggio</h1>
@@ -256,6 +265,15 @@ $("#grid").click(function(){
 //Navigation and buttons
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
+$("#about").click(function(){
+  
+  $(this).slideToggle();
+});
+
+$("#contact").click(function(){
+  //
+});
+
 
 $("#stepback").click(function(){
   //seek to beginning of piece
