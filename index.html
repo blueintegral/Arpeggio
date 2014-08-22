@@ -71,15 +71,7 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
-    <div class="about-text">
-      <b>Instructions:</b>
-      <br />
-      Dots represent the start of a note <br />
-      and the line behind it is the length. <br />
-       The length of a single grid square <br /> 
-       is under the playback buttons.
 
-    </div>
     <div class="container" id="controls">
       <div class="starter-template">
         <h1>Arpeggio</h1>
@@ -477,7 +469,7 @@ function playMusic() {
           startindex = i;
           currentNote = lineQ[i];
           while(lineQ[i] == lineQ[i+1]){
-            i++;
+            i++; //increment until we hit the next unique note
           }
           notelength = lineQ[i].x4 - lineQ[startindex].x3; //note length is the x value from each object in the line list
           notePitch = notelookup[(lineQ[i].y1)/50];//note pitch is the y value from each object, scaled so 0 = A, next division (50) = B, etc
@@ -486,9 +478,9 @@ function playMusic() {
           console.log(notePitch);
           console.log("length is");
           console.log(notelength);
-          noteFreqs[i] = notePitch;
-          noteTimes[i] = noteTime;
-          durations[i] = notelength;
+          noteFreqs[startindex] = notePitch; //Changed these from i to startindex
+          noteTimes[startindex] = noteTime; // so there's not a bunch of empty entries
+          durations[startindex] = notelength;
           noteposition++;
         }
 
@@ -496,108 +488,138 @@ function playMusic() {
           console.log("ERROR: Durations and Freqs list do not match!");
         }
 
-        for(j=0;j<durations.length;j++){
-          //iterate through each note and select the right chunk from the piano file to play
-          if(durations[j] > 50){ //tied whole notes
-              console.log("tied whole note");
-              for(k=0;k<durations[j]/50;k++){
-                audio.currentTime = noteTimes[j];
-                endtime = audio.currentTime;
-                audio.play();
-                int = setInterval(function() {
-                  if (audio.currentTime > endtime+3) {
-                    audio.pause();
-                   clearInterval(int);
-                   }
-               }, 100*(endtime+3));
-              }
-          }
-
-          if(durations[j] == 50){ //whole note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("whole note");
-              console.log(audio.currentTime);
-              console.log(endtime +3);
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+3) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+3));
-          }
-
-          if(durations[j] == 25){ //half note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("half note");
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+1.5) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+1.5));
-          }
-
-          if(durations[j] == 12.5){ //quarter note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("quarter note");
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+.75) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+.75));
-          }
+        
+      console.log(noteFreqs);
+      console.log(noteTimes);
+      console.log(durations);
 
 
-          if(durations[j] == 6.25){ //eigth note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("8th note");
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+.375) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+.375));
-          }
+        var AudioletApp = function() {
+        this.audiolet = new Audiolet();
+
+        var melodyA = new PSequence(noteFreqs);
+        //var melodyB = new PSequence([349, 330, 349, 392]);
+        //var melodyC = new PSequence([440, 392, 349, 330]);
+        var frequencyPattern = new PChoose([melodyA],
+                                           Infinity);
+        console.log(melodyA);
+        console.log(frequencyPattern);
+        var durationPattern = new PChoose([new PSequence(durations),
+                                          ],
+                                          1);
+        console.log(durationPattern);
+        this.audiolet.scheduler.play([frequencyPattern], durationPattern,
+            function(frequency) {
+                var synth = new Synth(this.audiolet, frequency);
+                synth.connect(this.audiolet.output);
+            }.bind(this)
+          );
+        };
+      audio.play();
 
 
-          if(durations[j] == 3.125){ //sixteenth note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("16th note");
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+.1875) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+.1875));
-          }
+        // for(j=0;j<durations.length;j++){
+        //   //iterate through each note and select the right chunk from the piano file to play
+        //   if(durations[j] > 50){ //tied whole notes
+        //       console.log("tied whole note");
+        //       for(k=0;k<durations[j]/50;k++){
+        //         endtime = audio.currentTime;
+        //         audio.currentTime = noteTimes[j];
+        //         audio.play();
+        //         int = setInterval(function() {
+        //           if (audio.currentTime > endtime+3) {
+        //             audio.pause();
+        //            clearInterval(int);
+        //            }
+        //        }, 100*(endtime+3));
+        //       }
+        //   }
 
-          if(durations[j] == 1.5625){ //thirtysecond note
-              audio.currentTime = noteTimes[j];
-              endtime = audio.currentTime;
-              console.log("32nd note");
-              audio.play();
-              int = setInterval(function() {
-                if (audio.currentTime > endtime+.094) {
-                  audio.pause();
-                 clearInterval(int);
-                 }
-             }, 100*(endtime+.094));
-          }
+        //   if(durations[j] == 50){ //whole note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("whole note");
+        //       console.log(audio.currentTime);
+        //       console.log(endtime +3);
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+3) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+3));
+        //   }
+
+        //   if(durations[j] == 25){ //half note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("half note");
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+1.5) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+1.5));
+        //   }
+
+        //   if(durations[j] == 12.5){ //quarter note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("quarter note");
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+.75) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+.75));
+        //   }
+
+
+        //   if(durations[j] == 6.25){ //eigth note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("8th note");
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+.375) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+.375));
+        //   }
+
+
+        //   if(durations[j] == 3.125){ //sixteenth note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("16th note");
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+.1875) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+.1875));
+        //   }
+
+        //   if(durations[j] == 1.5625){ //thirtysecond note
+        //       audio.currentTime = noteTimes[j];
+        //       endtime = audio.currentTime;
+        //       console.log("32nd note");
+        //       audio.play();
+        //       int = setInterval(function() {
+        //         if (audio.currentTime > endtime+.094) {
+        //           audio.pause();
+        //          clearInterval(int);
+        //          }
+        //      }, 100*(endtime+.094));
+        //   }
 
 
 
-        }
+        // }
         
         
 }
